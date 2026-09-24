@@ -1,0 +1,14 @@
+services:
+  api:
+    build: .
+    environment:
+      HHGOA_DATA_DIR: /data/HHGOA
+      HHGOA_GRAPH_BACKEND: local
+      HHGOA_GRAPH_CASES_PATH: /data/HHGOA/runtime/cases.jsonl
+    volumes:
+      - .:/data/HHGOA:ro
+      - hhgoa-runtime:/data/HHGOA/runtime
+    ports:
+      - "8000:8000"
+volumes:
+  hhgoa-runtime:

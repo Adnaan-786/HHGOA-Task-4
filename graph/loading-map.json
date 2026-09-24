@@ -1,0 +1,58 @@
+{
+  "customers.csv": {
+    "job": "hhgoa_customers",
+    "file_tag": "f"
+  },
+  "cards.csv": {
+    "job": "hhgoa_cards",
+    "file_tag": "f"
+  },
+  "transactions.graph.csv": {
+    "job": "hhgoa_transactions",
+    "file_tag": "f"
+  },
+  "device_profiles.csv": {
+    "job": "hhgoa_profiles",
+    "file_tag": "f"
+  },
+  "email_domains.csv": {
+    "job": "hhgoa_domains",
+    "file_tag": "f"
+  },
+  "billing_regions.csv": {
+    "job": "hhgoa_regions",
+    "file_tag": "f"
+  },
+  "from_device.csv": {
+    "job": "hhgoa_devices",
+    "file_tag": "f"
+  },
+  "purchaser_email.csv": {
+    "job": "hhgoa_purchaser",
+    "file_tag": "f"
+  },
+  "recipient_email.csv": {
+    "job": "hhgoa_recipient",
+    "file_tag": "f"
+  },
+  "billed_in.csv": {
+    "job": "hhgoa_billing",
+    "file_tag": "f"
+  },
+  "transaction_sequence.csv": {
+    "job": "hhgoa_sequence",
+    "file_tag": "f"
+  },
+  "historical_cases.csv": {
+    "job": "hhgoa_history",
+    "file_tag": "f"
+  },
+  "case_transactions.csv": {
+    "job": "hhgoa_case_transactions",
+    "file_tag": "f"
+  },
+  "case_connections.csv": {
+    "job": "hhgoa_case_connections",
+    "file_tag": "f"
+  }
+}

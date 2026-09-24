@@ -1,0 +1,144 @@
+{
+  "case_id": "HHG-010",
+  "case": {
+    "status": "open",
+    "verdict": "legitimate",
+    "fraud_probability": 0.019142,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 0.0,
+    "evidence": [
+      {
+        "claim": "A pre-episode baseline contains 15 transactions; median amount is USD 96.98 and the flagged amount is 10.31 times that median.",
+        "source": "external",
+        "ref": "local:behavior-v1(transaction=3506725,cutoff=2016-12-02T18:18:27)",
+        "entity_ids": [
+          "3506725",
+          "3306585",
+          "3329022",
+          "3350771",
+          "3351935",
+          "3392418",
+          "3397310",
+          "3411190",
+          "3419055",
+          "3475344",
+          "3492086"
+        ]
+      },
+      {
+        "claim": "Identity signals: device newness=New, proxy indicator=unknown. These correlated identity signals count as one evidence group and do not alone establish fraud.",
+        "source": "external",
+        "ref": "local:behavior-v1(transaction=3506725,cutoff=2016-12-02T18:18:27)",
+        "entity_ids": [
+          "3506725"
+        ]
+      },
+      {
+        "claim": "TigerGraph returned time-bounded context for the trigger: 1 transaction rows, 1 card-history rows, 1 customer-history rows, and 1 prior case records.",
+        "source": "graph",
+        "ref": "tigergraph:context(transaction=3506725,cutoff=2016-12-02T18:18:27)",
+        "entity_ids": [
+          "3506725",
+          "C10434-K1",
+          "C10434"
+        ]
+      },
+      {
+        "claim": "Probability 0.0191 comes from a model calibrated on selected historical investigations, not all bank transactions.",
+        "source": "external",
+        "ref": "calibration:2c6f892d3b92726197379c79964ef59280866a0c365dda0f98b03fd9a30f4191",
+        "entity_ids": [
+          "3506725"
+        ]
+      },
+      {
+        "claim": "The profile appears on 7 other cards in seven days. These are unconfirmed candidate links; no shared fraud is inferred from the profile alone.",
+        "source": "external",
+        "ref": "local:device_neighbors(transaction=3506725,cutoff=2016-12-02T18:18:27)",
+        "entity_ids": [
+          "C02250-K2",
+          "C03738-K2",
+          "C04108-K2",
+          "C05508-K1",
+          "C07185-K2",
+          "C10308-K1",
+          "C12897-K1"
+        ]
+      },
+      {
+        "claim": "Retrieved 3 historical cases whose outcomes were available before this investigation, including cleared counterexamples when available.",
+        "source": "external",
+        "ref": "local:historical_case_lookup",
+        "entity_ids": [
+          "CC-0873",
+          "CC-5556",
+          "CC-5537"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-0873",
+      "CC-5556",
+      "CC-5537"
+    ],
+    "summary": "The risk_score trigger for 3506725 was investigated using a pre-episode baseline and time-bounded activity. The provisional assessment is legitimate with probability 0.0191 and 0 transactions in the candidate episode. Historical calibration applies to selected investigations, not all bank transactions. Missing information includes merchant identity, payment authorization/settlement status. Analyst explanation: Assessment is grounded in the deterministic evidence context and policy engine.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-010-R1"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Simulated no response within 24 hours. The request would distinguish an authorized purchase from unauthorized use."
+    },
+    {
+      "type": "analyst_info",
+      "asked_after_step": 5,
+      "assumed_response": "Assumed unavailable: authorization/settlement status. This request resolves the status-dependent branches of R4/R5; no pending or cleared status is invented."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "\u00a73a: probability \u22650.30, an evidence request, or a customer dispute requires a case"
+      },
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "\u00a73b: retain monitoring while collecting evidence for the unresolved recommendation"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "\u00a73a: probability \u22650.30, an evidence request, or a customer dispute requires a case"
+      },
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: no response after 24 hours; keep the card under monitoring"
+      }
+    ],
+    "what_changed": "The preserved initial recommendation was reassessed against the recorded evidence response and updated policy facts."
+  },
+  "sar": {
+    "file": false,
+    "reason": "\u00a73a: confirmed or strongly suspected fraud and a reporting condition were not both established without unresolved conflict",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Further retrieval from the supplied data cannot resolve the missing verification or status information; the case remains open or escalated after the explicitly simulated timeout.",
+  "tool_calls": 8,
+  "tokens": 0,
+  "latency_s": 9.734659
+}

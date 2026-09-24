@@ -1,0 +1,124 @@
+{
+  "case_id": "HHG-007",
+  "case": {
+    "status": "open",
+    "verdict": "fraud",
+    "fraud_probability": 0.981171,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3514948"
+    ],
+    "first_suspicious_txn_id": "3514948",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 111.92,
+    "evidence": [
+      {
+        "claim": "A pre-episode baseline contains 1266 transactions; median amount is USD 77.96 and the flagged amount is 1.44 times that median.",
+        "source": "external",
+        "ref": "local:behavior-v1(transaction=3514948,cutoff=2016-12-05T03:46:14)",
+        "entity_ids": [
+          "3514948",
+          "3507764",
+          "3507797",
+          "3507956",
+          "3508083",
+          "3508106",
+          "3508277",
+          "3508458",
+          "3508487",
+          "3508716",
+          "3508725"
+        ]
+      },
+      {
+        "claim": "TigerGraph returned time-bounded context for the trigger: 1 transaction rows, 1 card-history rows, 1 customer-history rows, and 1 prior case records.",
+        "source": "graph",
+        "ref": "tigergraph:context(transaction=3514948,cutoff=2016-12-05T03:46:14)",
+        "entity_ids": [
+          "3514948",
+          "C09933-K2",
+          "C09933"
+        ]
+      },
+      {
+        "claim": "Probability 0.9812 comes from a model calibrated on selected historical investigations, not all bank transactions.",
+        "source": "external",
+        "ref": "calibration:2c6f892d3b92726197379c79964ef59280866a0c365dda0f98b03fd9a30f4191",
+        "entity_ids": [
+          "3514948"
+        ]
+      },
+      {
+        "claim": "Retrieved 3 historical cases whose outcomes were available before this investigation, including cleared counterexamples when available.",
+        "source": "external",
+        "ref": "local:historical_case_lookup",
+        "entity_ids": [
+          "CC-5521",
+          "CC-5537",
+          "CC-5092"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5521",
+      "CC-5537",
+      "CC-5092"
+    ],
+    "summary": "The risk_score trigger for 3514948 was investigated using a pre-episode baseline and time-bounded activity. The provisional assessment is fraud with probability 0.9812 and 1 transactions in the candidate episode. Historical calibration applies to selected investigations, not all bank transactions. Missing information includes merchant identity, payment authorization/settlement status. Analyst explanation: Assessment is grounded in the deterministic evidence context and policy engine.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-007-R1"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 5,
+      "assumed_response": "Simulated no response within 24 hours. The request would distinguish an authorized purchase from unauthorized use."
+    },
+    {
+      "type": "analyst_info",
+      "asked_after_step": 5,
+      "assumed_response": "Assumed unavailable: authorization/settlement status. This request resolves the status-dependent branches of R4/R5; no pending or cleared status is invented."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "\u00a73a: probability \u22650.30, an evidence request, or a customer dispute requires a case"
+      },
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "\u00a73b: retain monitoring while collecting evidence for the unresolved recommendation"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "\u00a73a: probability \u22650.30, an evidence request, or a customer dispute requires a case"
+      },
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: no response after 24 hours; keep the card under monitoring"
+      }
+    ],
+    "what_changed": "The preserved initial recommendation was reassessed against the recorded evidence response and updated policy facts."
+  },
+  "sar": {
+    "file": false,
+    "reason": "\u00a73a: confirmed or strongly suspected fraud and a reporting condition were not both established without unresolved conflict",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Further retrieval from the supplied data cannot resolve the missing verification or status information; the case remains open or escalated after the explicitly simulated timeout.",
+  "tool_calls": 8,
+  "tokens": 0,
+  "latency_s": 7.140822
+}

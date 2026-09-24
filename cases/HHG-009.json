@@ -1,0 +1,129 @@
+{
+  "case_id": "HHG-009",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.999995,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3581141"
+    ],
+    "first_suspicious_txn_id": "3581141",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 30.02,
+    "evidence": [
+      {
+        "claim": "A pre-episode baseline contains 21 transactions; median amount is USD 49.92 and the flagged amount is 0.60 times that median.",
+        "source": "external",
+        "ref": "local:behavior-v1(transaction=3581141,cutoff=2016-12-28T17:10:53)",
+        "entity_ids": [
+          "3581141",
+          "3438059",
+          "3483187",
+          "3483198",
+          "3497063",
+          "3507659",
+          "3507660",
+          "3507672",
+          "3539034",
+          "3545489",
+          "3576079"
+        ]
+      },
+      {
+        "claim": "The billing region is absent from the baseline. The source does not establish a precise purchase location or customer travel.",
+        "source": "external",
+        "ref": "local:behavior-v1(transaction=3581141,cutoff=2016-12-28T17:10:53)",
+        "entity_ids": [
+          "3581141"
+        ]
+      },
+      {
+        "claim": "TigerGraph returned time-bounded context for the trigger: 1 transaction rows, 1 card-history rows, 1 customer-history rows, and 1 prior case records.",
+        "source": "graph",
+        "ref": "tigergraph:context(transaction=3581141,cutoff=2016-12-28T17:10:53)",
+        "entity_ids": [
+          "3581141",
+          "C08299-K1",
+          "C08299"
+        ]
+      },
+      {
+        "claim": "Probability 1.0000 comes from a model calibrated on selected historical investigations, not all bank transactions.",
+        "source": "external",
+        "ref": "calibration:2c6f892d3b92726197379c79964ef59280866a0c365dda0f98b03fd9a30f4191",
+        "entity_ids": [
+          "3581141"
+        ]
+      },
+      {
+        "claim": "Retrieved 3 historical cases whose outcomes were available before this investigation, including cleared counterexamples when available.",
+        "source": "external",
+        "ref": "local:historical_case_lookup",
+        "entity_ids": [
+          "CC-5537",
+          "CC-5504",
+          "CC-5463"
+        ]
+      },
+      {
+        "claim": "The supplied customer report disputes the flagged transaction.",
+        "source": "customer",
+        "ref": "case_pack:trigger_text",
+        "entity_ids": [
+          "C08299"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5537",
+      "CC-5504",
+      "CC-5463"
+    ],
+    "summary": "The customer_report trigger for 3581141 was investigated using a pre-episode baseline and time-bounded activity. The provisional assessment is fraud with probability 1.0000 and 1 transactions in the candidate episode. Historical calibration applies to selected investigations, not all bank transactions. Missing information includes merchant identity, payment authorization/settlement status. Analyst explanation: Assessment is grounded in the deterministic evidence context and policy engine.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-009-R1"
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "\u00a73a: probability \u22650.30, an evidence request, or a customer dispute requires a case"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer verification denies the flagged transaction"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "\u00a73a: probability \u22650.30, an evidence request, or a customer dispute requires a case"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer verification denies the flagged transaction"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "\u00a73a: confirmed or strongly suspected fraud and a reporting condition were not both established without unresolved conflict",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "The customer denial in the supplied trigger settles the flagged transaction under R2.",
+  "tool_calls": 8,
+  "tokens": 0,
+  "latency_s": 5.663874
+}

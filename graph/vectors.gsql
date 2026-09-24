@@ -1,0 +1,5 @@
+// Administration only: run once after schema.gsql on TigerGraph 4.2+.
+CREATE GLOBAL SCHEMA_CHANGE JOB hhgoa_add_document_vector {
+  ALTER VERTEX DocumentChunk ADD VECTOR ATTRIBUTE embedding(DIMENSION=1536, METRIC="COSINE");
+}
+RUN GLOBAL SCHEMA_CHANGE JOB hhgoa_add_document_vector

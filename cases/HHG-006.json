@@ -1,0 +1,192 @@
+{
+  "case_id": "HHG-006",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.999763,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3476602",
+      "3476633",
+      "3476665",
+      "3476682"
+    ],
+    "first_suspicious_txn_id": "3476602",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 1906.07,
+    "evidence": [
+      {
+        "claim": "A pre-episode baseline contains 138 transactions; median amount is USD 59.01 and the flagged amount is 8.17 times that median.",
+        "source": "external",
+        "ref": "local:behavior-v1(transaction=3476682,cutoff=2016-11-22T02:30:00)",
+        "entity_ids": [
+          "3476682",
+          "3456278",
+          "3458196",
+          "3459841",
+          "3460711",
+          "3462900",
+          "3463839",
+          "3464219",
+          "3465543",
+          "3467250",
+          "3469605"
+        ]
+      },
+      {
+        "claim": "The product code is absent from the pre-episode baseline; it is not a merchant identifier.",
+        "source": "external",
+        "ref": "local:behavior-v1(transaction=3476682,cutoff=2016-11-22T02:30:00)",
+        "entity_ids": [
+          "3476682"
+        ]
+      },
+      {
+        "claim": "Identity signals: device newness=New, proxy indicator=unknown. These correlated identity signals count as one evidence group and do not alone establish fraud.",
+        "source": "external",
+        "ref": "local:behavior-v1(transaction=3476682,cutoff=2016-11-22T02:30:00)",
+        "entity_ids": [
+          "3476682"
+        ]
+      },
+      {
+        "claim": "A 48-hour online burst exceeds the card's baseline and includes unusual amount, product, or channel behavior.",
+        "source": "external",
+        "ref": "local:behavior-v1(transaction=3476682,cutoff=2016-11-22T02:30:00)",
+        "entity_ids": [
+          "3476682",
+          "3476602",
+          "3476633",
+          "3476665"
+        ]
+      },
+      {
+        "claim": "TigerGraph returned time-bounded context for the trigger: 1 transaction rows, 1 card-history rows, 1 customer-history rows, and 1 prior case records.",
+        "source": "graph",
+        "ref": "tigergraph:context(transaction=3476682,cutoff=2016-11-22T02:30:00)",
+        "entity_ids": [
+          "3476682",
+          "C07297-K1",
+          "C07297"
+        ]
+      },
+      {
+        "claim": "Probability 0.9998 comes from a model calibrated on selected historical investigations, not all bank transactions.",
+        "source": "external",
+        "ref": "calibration:2c6f892d3b92726197379c79964ef59280866a0c365dda0f98b03fd9a30f4191",
+        "entity_ids": [
+          "3476682"
+        ]
+      },
+      {
+        "claim": "The profile appears on 18 other cards in seven days. These are unconfirmed candidate links; no shared fraud is inferred from the profile alone.",
+        "source": "external",
+        "ref": "local:device_neighbors(transaction=3476682,cutoff=2016-11-22T02:30:00)",
+        "entity_ids": [
+          "C00288-K1",
+          "C01982-K2",
+          "C02716-K2",
+          "C02859-K1",
+          "C04108-K2",
+          "C05146-K1",
+          "C05560-K2",
+          "C05868-K1",
+          "C06976-K1",
+          "C07102-K1",
+          "C07171-K2",
+          "C08833-K1",
+          "C09274-K1",
+          "C10349-K1",
+          "C10448-K1",
+          "C10842-K1",
+          "C11865-K1",
+          "C12150-K1"
+        ]
+      },
+      {
+        "claim": "Retrieved 3 historical cases whose outcomes were available before this investigation, including cleared counterexamples when available.",
+        "source": "external",
+        "ref": "local:historical_case_lookup",
+        "entity_ids": [
+          "CC-5556",
+          "CC-5537",
+          "CC-5541"
+        ]
+      },
+      {
+        "claim": "The supplied customer report disputes the flagged transaction.",
+        "source": "customer",
+        "ref": "case_pack:trigger_text",
+        "entity_ids": [
+          "C07297"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5556",
+      "CC-5537",
+      "CC-5541"
+    ],
+    "summary": "The customer_report trigger for 3476682 was investigated using a pre-episode baseline and time-bounded activity. The provisional assessment is fraud with probability 0.9998 and 4 transactions in the candidate episode. Historical calibration applies to selected investigations, not all bank transactions. Missing information includes merchant identity, payment authorization/settlement status. Analyst explanation: Assessment is grounded in the deterministic evidence context and policy engine.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-HHG-006-R1"
+  },
+  "evidence_requests": [],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "\u00a73a: probability \u22650.30, an evidence request, or a customer dispute requires a case"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer verification denies the flagged transaction"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "\u00a73a, R2/R6/R9: confirmed or strongly suspected fraud meets a reporting condition; filing requires L2 approval"
+      }
+    ],
+    "final": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "\u00a73a: probability \u22650.30, an evidence request, or a customer dispute requires a case"
+      },
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer verification denies the flagged transaction"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "\u00a73a, R2/R6/R9: confirmed or strongly suspected fraud meets a reporting condition; filing requires L2 approval"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": true,
+    "reason": "\u00a73a: reporting is recommended under the applicable R2/R6/R9 conditions",
+    "narrative": "Activity involving customer C07297 and card C07297-K1 was identified between 2016-11-21 and 2016-11-21. The case identifies these subjects: C07297, C07297-K1. The observed activity is described as A pre-episode baseline contains 138 transactions; median amount is USD 59.01 and the flagged amount is 8.17 times that median.; The product code is absent from the pre-episode baseline; it is not a merchant identifier.; Identity signals: device newness=New, proxy indicator=unknown; These correlated identity signals count as one evidence group and do not alone establish fraud.; A 48-hour online burst exceeds the card's baseline and includes unusual amount, product, or channel behavior. The candidate episode has an estimated exposure of USD 1906.07. Precise purchase locations, merchant identities, and settlement status are not established by the supplied source data. The assessment assigns a fraud probability of 1.00 based on the recorded evidence; customer responses, where simulated, remain assumptions. The assessed fraud and exposure or corroborated connections satisfy the reporting conditions in policy \u00a73a. Filing is recommended for L2 review, and no regulatory report or banking control has been executed.",
+    "subjects": [
+      "C07297",
+      "C07297-K1"
+    ],
+    "total_amount_usd": 1906.07,
+    "activity_dates": [
+      "2016-11-21",
+      "2016-11-21"
+    ]
+  },
+  "stop_reason": "The customer denial in the supplied trigger settles the flagged transaction under R2.",
+  "tool_calls": 8,
+  "tokens": 0,
+  "latency_s": 6.385674
+}

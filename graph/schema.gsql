@@ -1,0 +1,30 @@
+// Install in a dedicated, empty Savanna workspace. Live compilation is a deployment gate.
+CREATE VERTEX Customer (PRIMARY_ID id STRING) WITH primary_id_as_attribute="true";
+CREATE VERTEX HHGOACard (PRIMARY_ID id STRING, customer_id STRING, card6 STRING) WITH primary_id_as_attribute="true";
+CREATE VERTEX Transaction (PRIMARY_ID id STRING, customer_id STRING, card_id STRING, amount_cents INT, product_code STRING, channel STRING, ts DATETIME, risk_score DOUBLE, addr1 STRING, addr2 STRING, device_newness STRING, proxy_flag STRING, match_status STRING, source_row UINT, source_version STRING) WITH primary_id_as_attribute="true";
+CREATE VERTEX DeviceProfile (PRIMARY_ID id STRING, profile STRING, device_info STRING, os STRING, browser STRING, screen STRING) WITH primary_id_as_attribute="true";
+CREATE VERTEX EmailDomain (PRIMARY_ID id STRING, domain STRING) WITH primary_id_as_attribute="true";
+CREATE VERTEX BillingRegion (PRIMARY_ID id STRING, addr1 STRING, addr2 STRING) WITH primary_id_as_attribute="true";
+// Physical name avoids the CASE keyword; this is the logical Case vertex.
+CREATE VERTEX InvestigationCase (PRIMARY_ID id STRING, case_id STRING, customer_id STRING, card_id STRING, opened_at DATETIME, available_at DATETIME, status STRING, verdict STRING, pattern STRING, exposure_cents INT, source STRING, source_version STRING, narrative STRING, revision UINT, payload_json STRING) WITH primary_id_as_attribute="true";
+CREATE VERTEX Evidence (PRIMARY_ID id STRING, claim STRING, source STRING, ref STRING, independent_group STRING, simulated BOOL, observed_at DATETIME, available_at DATETIME) WITH primary_id_as_attribute="true";
+CREATE VERTEX Decision (PRIMARY_ID id STRING, action STRING, route STRING, reason STRING, revision UINT, created_at DATETIME) WITH primary_id_as_attribute="true";
+CREATE VERTEX EvidenceRequest (PRIMARY_ID id STRING, request_type STRING, response STRING, simulated BOOL, created_at DATETIME) WITH primary_id_as_attribute="true";
+CREATE VERTEX DocumentChunk (PRIMARY_ID id STRING, text STRING, source_uri STRING, source_version STRING, source_kind STRING, case_id STRING, available_at DATETIME) WITH primary_id_as_attribute="true";
+
+CREATE DIRECTED EDGE HHGOA_OWNS (FROM Customer, TO HHGOACard) WITH REVERSE_EDGE="HHGOA_OWNED_BY";
+CREATE DIRECTED EDGE HHGOA_MADE (FROM HHGOACard, TO Transaction) WITH REVERSE_EDGE="HHGOA_ON_TRANSACTION_CARD";
+CREATE DIRECTED EDGE FROM_DEVICE (FROM Transaction, TO DeviceProfile) WITH REVERSE_EDGE="DEVICE_TRANSACTIONS";
+CREATE DIRECTED EDGE PURCHASER_EMAIL (FROM Transaction, TO EmailDomain);
+CREATE DIRECTED EDGE RECIPIENT_EMAIL (FROM Transaction, TO EmailDomain);
+CREATE DIRECTED EDGE BILLED_IN (FROM Transaction, TO BillingRegion);
+CREATE DIRECTED EDGE NEXT_TRANSACTION (FROM Transaction, TO Transaction, seconds UINT);
+CREATE DIRECTED EDGE INVOLVES (FROM InvestigationCase, TO Transaction);
+CREATE DIRECTED EDGE HHGOA_ON_CARD (FROM InvestigationCase, TO HHGOACard);
+CREATE DIRECTED EDGE HHGOA_CONNECTED_TO (FROM InvestigationCase, TO HHGOACard);
+CREATE DIRECTED EDGE SUPPORTS (FROM Evidence, TO InvestigationCase);
+CREATE DIRECTED EDGE RECORDS (FROM InvestigationCase, TO Decision);
+CREATE DIRECTED EDGE REQUESTS (FROM InvestigationCase, TO EvidenceRequest);
+CREATE DIRECTED EDGE CITES (FROM Evidence, TO DocumentChunk);
+
+CREATE GRAPH HHGOAFraudGraph (Customer, HHGOACard, Transaction, DeviceProfile, EmailDomain, BillingRegion, InvestigationCase, Evidence, Decision, EvidenceRequest, DocumentChunk, HHGOA_OWNS, HHGOA_OWNED_BY, HHGOA_MADE, HHGOA_ON_TRANSACTION_CARD, FROM_DEVICE, DEVICE_TRANSACTIONS, PURCHASER_EMAIL, RECIPIENT_EMAIL, BILLED_IN, NEXT_TRANSACTION, INVOLVES, HHGOA_ON_CARD, HHGOA_CONNECTED_TO, SUPPORTS, RECORDS, REQUESTS, CITES);

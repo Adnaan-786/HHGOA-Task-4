@@ -1,0 +1,91 @@
+USE GRAPH HHGOAFraudGraph
+
+// Upload each normalized CSV to the matching job's filename alias f.
+// Repeated loads upsert stable vertex/edge IDs; no deletion is performed.
+
+// Source: customers.csv
+CREATE LOADING JOB hhgoa_customers FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX Customer VALUES ($0) USING header="true", separator=",", quote="double";
+}
+
+// Source: cards.csv
+CREATE LOADING JOB hhgoa_cards FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX HHGOACard VALUES ($0, $1, $2) USING header="true", separator=",", quote="double";
+  LOAD f TO EDGE HHGOA_OWNS VALUES ($1, $0) USING header="true", separator=",", quote="double";
+}
+
+// Source: transactions.graph.csv
+CREATE LOADING JOB hhgoa_transactions FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX Transaction VALUES ($0, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) USING header="true", separator=",", quote="double";
+  LOAD f TO EDGE HHGOA_MADE VALUES ($2, $0) USING header="true", separator=",", quote="double";
+}
+
+// Source: device_profiles.csv
+CREATE LOADING JOB hhgoa_profiles FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX DeviceProfile VALUES ($0, $1, $2, $3, $4, $5) USING header="true", separator=",", quote="double";
+}
+
+// Source: email_domains.csv
+CREATE LOADING JOB hhgoa_domains FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX EmailDomain VALUES ($0, $1) USING header="true", separator=",", quote="double";
+}
+
+// Source: billing_regions.csv
+CREATE LOADING JOB hhgoa_regions FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX BillingRegion VALUES ($0, $1, $2) USING header="true", separator=",", quote="double";
+}
+
+// Source: from_device.csv
+CREATE LOADING JOB hhgoa_devices FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE FROM_DEVICE VALUES ($0, $1) USING header="true", separator=",", quote="double";
+}
+
+// Source: purchaser_email.csv
+CREATE LOADING JOB hhgoa_purchaser FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE PURCHASER_EMAIL VALUES ($0, $1) USING header="true", separator=",", quote="double";
+}
+
+// Source: recipient_email.csv
+CREATE LOADING JOB hhgoa_recipient FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE RECIPIENT_EMAIL VALUES ($0, $1) USING header="true", separator=",", quote="double";
+}
+
+// Source: billed_in.csv
+CREATE LOADING JOB hhgoa_billing FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE BILLED_IN VALUES ($0, $1) USING header="true", separator=",", quote="double";
+}
+
+// Source: transaction_sequence.csv
+CREATE LOADING JOB hhgoa_sequence FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE NEXT_TRANSACTION VALUES ($0, $1, $2) USING header="true", separator=",", quote="double";
+}
+
+// Source: historical_cases.csv
+CREATE LOADING JOB hhgoa_history FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO VERTEX InvestigationCase VALUES ($0, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 1, "") USING header="true", separator=",", quote="double";
+  LOAD f TO EDGE HHGOA_ON_CARD VALUES ($0, $2) USING header="true", separator=",", quote="double";
+}
+
+// Source: case_transactions.csv
+CREATE LOADING JOB hhgoa_case_transactions FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE INVOLVES VALUES ($0, $1) USING header="true", separator=",", quote="double";
+}
+
+// Source: case_connections.csv
+CREATE LOADING JOB hhgoa_case_connections FOR GRAPH HHGOAFraudGraph {
+  DEFINE FILENAME f;
+  LOAD f TO EDGE HHGOA_CONNECTED_TO VALUES ($0, $1) USING header="true", separator=",", quote="double";
+}

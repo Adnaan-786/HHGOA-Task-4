@@ -1,0 +1,9 @@
+{
+  "name": "hhgoa-analyst-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {"dev": "vite", "build": "tsc && vite build"},
+  "dependencies": {"@vitejs/plugin-react": "latest", "cytoscape": "latest", "react": "latest", "react-dom": "latest"},
+  "devDependencies": {"typescript": "latest", "vite": "latest", "@types/react": "latest", "@types/react-dom": "latest"}
+}

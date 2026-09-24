@@ -1,0 +1,87 @@
+// Read queries use explicit cutoffs. Only these installed names reach the agent.
+USE GRAPH HHGOAFraudGraph
+
+CREATE OR REPLACE QUERY transaction_details(STRING transaction_id, DATETIME cutoff) FOR GRAPH HHGOAFraudGraph {
+  seed = {Transaction.*};
+  result = SELECT t FROM seed:t WHERE t.id == transaction_id AND t.ts <= cutoff;
+  PRINT result AS transactions;
+}
+
+CREATE OR REPLACE QUERY card_history(STRING card_id, DATETIME start, DATETIME cutoff, UINT max_rows) FOR GRAPH HHGOAFraudGraph {
+  seed = {HHGOACard.*};
+  cards = SELECT c FROM seed:c WHERE c.id == card_id;
+  complete = SELECT t FROM cards:c -(HHGOA_MADE:e)-> Transaction:t WHERE t.ts >= start AND t.ts <= cutoff;
+  result = SELECT t FROM complete:t ORDER BY t.ts DESC, t.id ASC LIMIT max_rows;
+  PRINT complete.size() AS total_count, result AS transactions;
+}
+
+CREATE OR REPLACE QUERY customer_history(STRING customer_id, DATETIME start, DATETIME cutoff, UINT max_rows) FOR GRAPH HHGOAFraudGraph {
+  seed = {Customer.*};
+  customers = SELECT c FROM seed:c WHERE c.id == customer_id;
+  cards = SELECT k FROM customers:c -(HHGOA_OWNS:e)-> HHGOACard:k;
+  complete = SELECT t FROM cards:k -(HHGOA_MADE:e)-> Transaction:t WHERE t.ts >= start AND t.ts <= cutoff;
+  result = SELECT t FROM complete:t ORDER BY t.ts DESC, t.id ASC LIMIT max_rows;
+  PRINT complete.size() AS total_count, result AS transactions;
+}
+
+CREATE OR REPLACE QUERY episode_window(STRING card_id, DATETIME start, DATETIME cutoff, UINT max_rows) FOR GRAPH HHGOAFraudGraph {
+  seed = {HHGOACard.*};
+  cards = SELECT c FROM seed:c WHERE c.id == card_id;
+  complete = SELECT t FROM cards:c -(HHGOA_MADE:e)-> Transaction:t WHERE t.ts >= start AND t.ts <= cutoff;
+  result = SELECT t FROM complete:t ORDER BY t.ts ASC, t.id ASC LIMIT max_rows;
+  PRINT complete.size() AS total_count, result AS transactions;
+}
+
+CREATE OR REPLACE QUERY baseline_spending(STRING card_id, DATETIME start, DATETIME cutoff, UINT max_rows) FOR GRAPH HHGOAFraudGraph {
+  SumAccum<INT> @@amount_cents;
+  SumAccum<UINT> @@count;
+  seed = {HHGOACard.*};
+  cards = SELECT c FROM seed:c WHERE c.id == card_id;
+  result = SELECT t FROM cards:c -(HHGOA_MADE:e)-> Transaction:t
+    WHERE t.ts >= start AND t.ts <= cutoff
+    ACCUM @@amount_cents += abs(t.amount_cents), @@count += 1;
+  PRINT @@amount_cents AS total_absolute_cents, @@count AS transaction_count;
+}
+
+CREATE OR REPLACE QUERY device_neighbors(STRING device_id, DATETIME start, DATETIME cutoff, UINT max_rows) FOR GRAPH HHGOAFraudGraph {
+  seed = {DeviceProfile.*};
+  profiles = SELECT d FROM seed:d WHERE d.id == device_id;
+  complete = SELECT t FROM profiles:d -(DEVICE_TRANSACTIONS:e)-> Transaction:t WHERE t.ts >= start AND t.ts <= cutoff;
+  result = SELECT t FROM complete:t ORDER BY t.ts DESC, t.id ASC LIMIT max_rows;
+  PRINT complete.size() AS total_count, result AS transactions, profiles;
+}
+
+CREATE OR REPLACE QUERY historical_memory(STRING customer_id, DATETIME cutoff, STRING exclude_case_id, UINT max_rows) FOR GRAPH HHGOAFraudGraph {
+  seed = {InvestigationCase.*};
+  result = SELECT c FROM seed:c
+    WHERE c.customer_id == customer_id AND c.available_at <= cutoff
+      AND c.case_id != exclude_case_id AND c.source == "confirmed_historical"
+    ORDER BY c.available_at DESC LIMIT max_rows;
+  PRINT result AS cases;
+}
+
+CREATE OR REPLACE QUERY vector_context_search(LIST<FLOAT> query_vector, DATETIME cutoff, INT top_k, STRING exclude_case_id) FOR GRAPH HHGOAFraudGraph SYNTAX v3 {
+  MapAccum<VERTEX, FLOAT> @@distances;
+  candidates = SELECT d FROM (d:DocumentChunk)
+    WHERE d.available_at <= cutoff AND (exclude_case_id == "" OR d.case_id != exclude_case_id)
+      AND d.source_kind IN ("confirmed_historical", "policy", "typology", "regulatory");
+  matches = vectorSearch({DocumentChunk.embedding}, query_vector, top_k,
+    {candidate_set: candidates, distance_map: @@distances});
+  PRINT matches AS documents, @@distances AS distances;
+}
+
+CREATE OR REPLACE QUERY read_case_projection(STRING graph_case_id) FOR GRAPH HHGOAFraudGraph {
+  seed = {InvestigationCase.*};
+  result = SELECT c FROM seed:c WHERE c.id == graph_case_id;
+  PRINT result AS cases;
+}
+
+// This mutation is accessible only to the projection worker, never agent tools.
+CREATE OR REPLACE QUERY write_case_projection(STRING graph_case_id, STRING case_id, STRING payload_json, UINT revision, STRING source, STRING customer_id, STRING card_id, DATETIME opened_at, DATETIME available_at, STRING status, STRING verdict, STRING pattern, UINT exposure_cents) FOR GRAPH HHGOAFraudGraph {
+  INSERT INTO InvestigationCase (PRIMARY_ID, case_id, payload_json, revision, source, customer_id, card_id, opened_at, available_at, status, verdict, pattern, exposure_cents)
+    VALUES (graph_case_id, case_id, payload_json, revision, source, customer_id, card_id, opened_at, available_at, status, verdict, pattern, exposure_cents);
+  INSERT INTO HHGOA_ON_CARD (FROM, TO) VALUES (graph_case_id, card_id);
+  PRINT graph_case_id AS graph_case_id, revision AS revision;
+}
+
+INSTALL QUERY transaction_details, card_history, customer_history, episode_window, baseline_spending, device_neighbors, historical_memory, vector_context_search, read_case_projection, write_case_projection
