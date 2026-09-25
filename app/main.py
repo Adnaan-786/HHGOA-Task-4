@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 
+import httpx
+
 from .config import settings
 from .schemas import (
     ApprovalRequest,
@@ -11,6 +13,7 @@ from .schemas import (
     InvestigationResponse,
 )
 from .service import InvestigationService
+from .tigergraph import GraphToolError
 
 try:
     from fastapi import FastAPI, HTTPException
@@ -34,6 +37,11 @@ if FastAPI is not None:
             return service.investigate(request.case_id, request.evidence_response, request.idempotency_key, simulate_timeout=request.simulate_timeout)
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except (GraphToolError, httpx.HTTPError) as exc:
+            raise HTTPException(
+                status_code=503,
+                detail="TigerGraph is unavailable. Start the Savanna workspace, wait until it is running, and retry the investigation.",
+            ) from exc
 
     @app.get("/api/v1/investigations/{case_id}", response_model=InvestigationResponse)
     def get_investigation(case_id: str) -> InvestigationResponse:
@@ -61,6 +69,11 @@ if FastAPI is not None:
             return service.investigate(case_id, submission.response, submission.idempotency_key, simulate_timeout=False)
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except (GraphToolError, httpx.HTTPError) as exc:
+            raise HTTPException(
+                status_code=503,
+                detail="TigerGraph is unavailable. Start the Savanna workspace, wait until it is running, and retry the evidence response.",
+            ) from exc
 
     @app.post("/api/v1/investigations/{case_id}/approvals", response_model=ApprovalResult)
     def record_approval(case_id: str, request: ApprovalRequest) -> ApprovalResult:

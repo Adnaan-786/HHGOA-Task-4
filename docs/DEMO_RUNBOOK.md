@@ -9,3 +9,5 @@
 7. End by showing the case queue and the `READ-ONLY PILOT · SIMULATED CONTROLS` banner. Stop the services with Ctrl-C in the launcher Terminal.
 
 The recording should be 3–5 minutes, use the browser view and a readable zoom level, and avoid showing `.env`, terminal credentials, or raw source files. Upload it as an unlisted or public video and paste that URL into the submission form's Demo video field.
+
+If the launcher says that the Savanna workspace is stopped, open the TigerGraph Savanna portal, start the workspace, wait for its status to become running, and launch the `.command` file again. Auto-start is disabled for this workspace, so the launcher deliberately stops with that message instead of opening a UI that cannot investigate cases.
